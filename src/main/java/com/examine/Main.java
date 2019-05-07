@@ -6,6 +6,9 @@ import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.region.Region;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
@@ -115,12 +118,23 @@ public class Main {
                     pstmt.execute();
                     logger.error("处理完成： " + textMessage.getText() );
                     dataCon.close();
+
+                    String url = "https://daoyinjiaoyu.com/guidesound/video_finish?video_id=" + textMessage.getText();
+                    OkHttpClient okHttpClient = new OkHttpClient();
+                    final Request request = new Request.Builder()
+                            .url(url)
+                            .build();
+                    final Call call = okHttpClient.newCall(request);
+                    call.execute();
+
                 } catch (JMSException e) {
                     logger.error("异常 JMSException：" );
 
                     e.printStackTrace();
                 } catch (SQLException e) {
                     logger.error("异常 SQLException：" );
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
